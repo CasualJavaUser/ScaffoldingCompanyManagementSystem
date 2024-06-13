@@ -10,18 +10,18 @@
         <property name="show_sql">false</property>
         <property name="current_session_context_class">thread</property>
         <property name="hibernate.default_schema">DB_SCAFFOLDING</property>
-        <property name="hbm2ddl.auto">create-drop</property>
+        <property name="hbm2ddl.auto">create</property>
         <mapping class="org.example.entity.Client" />
         <mapping class="org.example.entity.ConstructionSite" />
         <mapping class="org.example.entity.Employee" />
-        <mapping class="org.example.entity.Foreman" />
+        <mapping class="org.example.entity.ForemanAtConstruction" />
         <mapping class="org.example.entity.Labourer" />
         <mapping class="org.example.entity.LabourerOnWorksite" />
         <mapping class="org.example.entity.Manager" />
+        <mapping class="org.example.entity.WarehouseManagerAtWarehouse" />
         <mapping class="org.example.entity.Offer" />
         <mapping class="org.example.entity.Qualification" />
         <mapping class="org.example.entity.Warehouse" />
-        <mapping class="org.example.entity.WarehouseManager" />
         <mapping class="org.example.entity.Worksite" />
     </session-factory>
 </hibernate-configuration>

@@ -5,6 +5,7 @@ import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.tool.schema.spi.CommandAcceptanceException;
 
 public class HibernateUtil {
     private static StandardServiceRegistry registry;
@@ -17,7 +18,9 @@ public class HibernateUtil {
                 MetadataSources sources = new MetadataSources(registry);
                 Metadata metadata = sources.getMetadataBuilder().build();
                 sessionFactory = metadata.getSessionFactoryBuilder().build();
-            } catch (Exception e) {
+            }
+            catch (CommandAcceptanceException ignored) {}
+            catch (Exception e) {
                 if (registry != null) {
                     StandardServiceRegistryBuilder.destroy(registry);
                 }

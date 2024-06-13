@@ -1,0 +1,64 @@
+.root {
+    -dark1: #121821;
+    -dark2: #142e52;
+    -bright1: #2c63ae;
+    -bright3: #7d9ecc;
+    -bright2: #96b1d7;
+    -font-color: #e1e4e8;
+    -bright-red: #cc7d7d;
+    -bright-green: #93cc7d;
+    -disabled: #646464;
+    -warning: #ff1d1d;
+    -font: 15px 'Trebuchet MS', sans-serif;
+
+    -created: lightgray;
+    -commented: lightyellow;
+    -revised: lightyellow;
+    -accepted: lightgreen;
+    -rejected: pink;
+    -active: lightblue;
+    -unpaid: lightyellow;
+    -closed: rgb(128, 128, 128);
+
+    -bg: #eeeeee;
+    -card: #d4d9dc;
+    -btn: #adbee0;
+    -btn-hover: #96b1d7;
+    -btn-pressed: #7d9ecc;
+    -table: #bbccea;
+}
+
+.card {
+    -fx-background-color: -card;
+    -fx-background-radius: 8;
+}
+
+.bg {
+    -fx-background-color: -bg;
+}
+
+.button {
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+    -fx-background-color: -btn;
+}
+
+.button:hover {
+    -fx-background-color: -btn-hover;
+}
+
+.button:pressed {
+    -fx-background-color: -btn-pressed;
+}
+
+.text-field {
+    -fx-border-color: -bright2;
+    -fx-border-width: 2;
+    -fx-border-radius: 2;
+}
+
+.table {
+    -fx-background-color: -table;
+    -fx-padding: 4;
+    -fx-background-radius: 4;
+}

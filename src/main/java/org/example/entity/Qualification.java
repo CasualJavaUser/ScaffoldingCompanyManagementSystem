@@ -12,10 +12,10 @@ public class Qualification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     private Type type;
 
-    @Column(name = "expiry_date")
+    @Column(name = "expiry_date", nullable = false)
     LocalDate expiryDate;
 
     public enum Type {
@@ -32,14 +32,6 @@ public class Qualification {
     public Qualification(Type type, LocalDate expiryDate) {
         this.type = type;
         this.expiryDate = expiryDate;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public LocalDate getExpiryDate() {
-        return expiryDate;
     }
 
     @Override

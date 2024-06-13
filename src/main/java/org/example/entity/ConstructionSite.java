@@ -1,20 +1,17 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
+import org.example.Database;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "construction_site")
 public class ConstructionSite extends Worksite {
-    @Column(name = "is_at_heights")
+    @Column(name = "is_at_heights", nullable = false)
     boolean isAtHeights;
-
-    @OneToMany
-    @JoinColumn(name = "construction_site_id")
-    private final Map<LocalDate, Foreman> foremen = new HashMap<>();
 
     public ConstructionSite() {}
 
@@ -22,11 +19,13 @@ public class ConstructionSite extends Worksite {
         super(address);
     }
 
-    public void setForeman(Foreman foreman, LocalDate date) {
-        foremen.put(date, foreman);
+    public static Set<ConstructionSite> getConstructionSites() {
+        return Database.selectFrom(ConstructionSite.class).stream().collect(Collectors.toSet());
     }
 
-    public void setForemanToday(Foreman foreman) {
-        foremen.put(LocalDate.now(), foreman);
+    public static Set<ConstructionSite> getActiveConstructionSites() {
+        return Database.selectFrom(ConstructionSite.class).stream()
+                .filter(Worksite::isActive)
+                .collect(Collectors.toSet());
     }
 }

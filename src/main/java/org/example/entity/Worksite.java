@@ -1,6 +1,7 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
+import org.example.Database;
 
 import java.time.LocalDate;
 
@@ -14,17 +15,16 @@ public abstract class Worksite {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "address")
+    @Column(name = "address", nullable = false)
     private String address;
+
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive;
 
     public Worksite() {}
 
     public Worksite(String address) {
         this.address = address;
-    }
-
-    public LabourerOnWorksite addLabourer(Labourer labourer, LocalDate date) {
-        return new LabourerOnWorksite(labourer, this, date);
     }
 
     public String getAddress() {
@@ -34,5 +34,13 @@ public abstract class Worksite {
     @Override
     public String toString() {
         return "Worksite (address: " + address + ")";
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public Integer getId() {
+        return id;
     }
 }
