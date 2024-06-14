@@ -39,9 +39,6 @@ public class Offer {
     @Column(name = "rental_cost", nullable = false)
     private float rentalCost;
 
-    @Column(name = "total_cost", nullable = false)
-    private float totalCost;
-
     @Column(name = "status", nullable = false)
     private Status status;
 
@@ -52,6 +49,7 @@ public class Offer {
     private String comment;
 
     public enum Status {
+        ALL(null), //only for UI purposes
         CREATED("lightgray"),
         COMMENTED("lightyellow"),
         REVISED("lightyellow"),
@@ -61,7 +59,7 @@ public class Offer {
         UNPAID("lightyellow"),
         CLOSED("rgb(128, 128, 128)");
 
-        private String color;
+        private final String color;
 
         Status (String color) {
             this.color = color;
@@ -84,22 +82,21 @@ public class Offer {
         this.assemblyCost = assemblyCost;
         this.disassemblyCost = disassemblyCost;
         this.rentalCost = rentalCost;
-        this.totalCost = calculateTotalCost();
         this.status = Status.CREATED;
         this.invoiceNumber = null;
         this.comment = null;
     }
 
-    private float calculateTotalCost() {
+    public float getTotalCost() {
+        return calculateTotalCost(assemblyEndDate, disassemblyStartDate, assemblyCost, disassemblyCost, rentalCost);
+    }
+
+    public static float calculateTotalCost(LocalDate assemblyEndDate, LocalDate disassemblyStartDate, float assemblyCost, float disassemblyCost, float rentalCost) {
         return assemblyCost + disassemblyCost + (disassemblyStartDate.toEpochDay() - assemblyEndDate.toEpochDay()) * rentalCost;
     }
 
-    public float getTotalCost() {
-        return totalCost;
-    }
-
     public void moveDisassemblyDate(LocalDate newDate) {
-        if (!newDate.isAfter(assemblyEndDate)) {
+        if (!isDisassemblyDateValid(newDate)) {
             System.err.println("new disassembly start date must be later than the assembly end date");
             return;
         }
@@ -107,11 +104,23 @@ public class Offer {
         disassemblyStartDate = LocalDate.of(newDate.getYear(), newDate.getMonth(), newDate.getDayOfMonth());
     }
 
+    public boolean isDisassemblyDateValid(LocalDate newDate) {
+        return newDate.isAfter(assemblyEndDate);
+    }
+
     public void accept() {
         status = Status.ACCEPTED;
     }
 
-    public void revise() {
+    public void revise(String description, LocalDate assemblyStartDate, LocalDate assemblyEndDate, LocalDate disassemblyStartDate, LocalDate disassemblyEndDate, float assemblyCost, float disassemblyCost, float rentalCost) {
+        this.description = description;
+        this.assemblyStartDate = assemblyStartDate;
+        this.assemblyEndDate = assemblyEndDate;
+        this.disassemblyStartDate = disassemblyStartDate;
+        this.disassemblyEndDate = disassemblyEndDate;
+        this.assemblyCost = assemblyCost;
+        this.disassemblyCost = disassemblyCost;
+        this.rentalCost = rentalCost;
         comment = null;
         status = Status.REVISED;
     }
@@ -130,19 +139,111 @@ public class Offer {
         status = Status.CLOSED;
     }
 
-    public static Offer createOffer(String title, String description, LocalDate assemblyStartDate, LocalDate assemblyEndDate, LocalDate disassemblyStartDate, LocalDate disassemblyEndDate, float assemblyCost, float disassemblyCost, float rentalCost) {
-        if (!assemblyStartDate.isBefore(assemblyEndDate) || !disassemblyStartDate.isBefore(disassemblyEndDate) || !disassemblyStartDate.isAfter(assemblyEndDate)) {
-            System.err.println("incorrect dates");
+    public static Offer createOffer(String title, String description, LocalDate assemblyStartDate, LocalDate assemblyEndDate, LocalDate disassemblyStartDate, LocalDate disassemblyEndDate, float assemblyCost, float disassemblyCost, float rentalCost, Client client) {
+        String message = isOfferValid(title, description, assemblyStartDate, assemblyEndDate, disassemblyStartDate, disassemblyEndDate, assemblyCost, disassemblyCost, rentalCost, client);
+        if (message != null) {
+            System.err.println(message);
             return null;
         }
-        return new Offer(title, description, assemblyStartDate, assemblyEndDate, disassemblyStartDate, disassemblyEndDate, assemblyCost, disassemblyCost, rentalCost);
+        Offer offer = new Offer(title, description, assemblyStartDate, assemblyEndDate, disassemblyStartDate, disassemblyEndDate, assemblyCost, disassemblyCost, rentalCost);
+        client.addOffer(offer);
+        return offer;
+    }
+
+    public static String isOfferValid(String title, String description, LocalDate assemblyStartDate, LocalDate assemblyEndDate, LocalDate disassemblyStartDate, LocalDate disassemblyEndDate, float assemblyCost, float disassemblyCost, float rentalCost, Client client) {
+        if (title == null || title.isEmpty())
+            return "Offer title cannot be empty.";
+        if (description == null || description.isEmpty())
+            return "Offer description cannot be empty.";
+        if (assemblyStartDate == null || assemblyEndDate == null || disassemblyStartDate == null || disassemblyEndDate == null)
+            return "All dates are required.";
+        if (!assemblyStartDate.isBefore(assemblyEndDate))
+            return "The assembly start date must be before the assembly end date.";
+        if (!disassemblyStartDate.isBefore(disassemblyEndDate))
+            return "The disassembly start date must be before disassembly end date.";
+        if (!disassemblyStartDate.isAfter(assemblyEndDate))
+            return "The disassembly start date must be after the assembly end date.";
+        if (assemblyCost < 0)
+            return "The assembly cost cannot be less than 0.";
+        if (disassemblyCost < 0)
+            return "The disassembly cost cannot be less than 0.";
+        if (rentalCost < 0)
+            return "The rental cost cannot be less than 0.";
+        if (client == null) {
+            return "Client must not be null";
+        }
+        return null;
     }
 
     public Status getStatus() {
+        if (status == Status.ACCEPTED && !assemblyStartDate.isAfter(LocalDate.now()))
+            status = Status.ACTIVE;
+        else if (status == Status.ACTIVE && disassemblyEndDate.isBefore(LocalDate.now()))
+            status = Status.UNPAID;
         return status;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public Integer getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getAssemblyStartDateString() {
+        return assemblyStartDate.toString();
+    }
+
+    public String getAssemblyEndDateString() {
+        return assemblyEndDate.toString();
+    }
+
+    public String getDisassemblyStartDateString() {
+        return disassemblyStartDate.toString();
+    }
+
+    public String getDisassemblyEndDateString() {
+        return disassemblyEndDate.toString();
+    }
+
+    public LocalDate getAssemblyStartDateCopy() {
+        return LocalDate.from(assemblyStartDate);
+    }
+
+    public LocalDate getAssemblyEndDateCopy() {
+        return LocalDate.from(assemblyEndDate);
+    }
+
+    public LocalDate getDisassemblyStartDateCopy() {
+        return LocalDate.from(disassemblyStartDate);
+    }
+
+    public LocalDate getDisassemblyEndDateCopy() {
+        return LocalDate.from(disassemblyEndDate);
+    }
+
+    public float getAssemblyCost() {
+        return assemblyCost;
+    }
+
+    public float getDisassemblyCost() {
+        return disassemblyCost;
+    }
+
+    public float getRentalCost() {
+        return rentalCost;
+    }
+
+    public String getInvoiceNumber() {
+        return invoiceNumber;
+    }
+
+    public String getComment() {
+        return comment;
     }
 }

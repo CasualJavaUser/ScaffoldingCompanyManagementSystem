@@ -23,7 +23,7 @@
                 <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" spacing="8.0"
                       styleClass="card">
                     <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="New offer">
+                        <Text fx:id="title" strokeType="OUTSIDE" strokeWidth="0.0">
                             <VBox.margin>
                                 <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
                             </VBox.margin>
@@ -31,11 +31,6 @@
                                 <Font size="36.0"/>
                             </font>
                         </Text>
-                        <TextField fx:id="title" maxWidth="200.0" promptText="Title" styleClass="text-field">
-                            <VBox.margin>
-                                <Insets left="16.0" right="16.0"/>
-                            </VBox.margin>
-                        </TextField>
                         <TextArea fx:id="description" maxWidth="300.0" prefHeight="100.0" prefWidth="200.0" promptText="Description"
                                   wrapText="true" styleClass="text-field">
                             <VBox.margin>

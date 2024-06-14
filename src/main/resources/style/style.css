@@ -62,3 +62,7 @@
     -fx-padding: 4;
     -fx-background-radius: 4;
 }
+
+.bold {
+    -fx-font-weight: bold;
+}

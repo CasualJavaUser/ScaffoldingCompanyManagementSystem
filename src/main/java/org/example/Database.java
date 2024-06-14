@@ -61,6 +61,20 @@ public class Database {
         if (object == null)
             return;
 
+        Transaction transaction = currentSession.beginTransaction();
         currentSession.merge(object);
+        transaction.commit();
+    }
+
+    public static void mergeAndPersist(Object toMerge, Object... toPersist) {
+        if (toPersist == null || toMerge == null)
+            return;
+
+        Transaction transaction = currentSession.beginTransaction();
+        for (Object o : toPersist) {
+            currentSession.persist(o);
+        }
+        currentSession.merge(toMerge);
+        transaction.commit();
     }
 }

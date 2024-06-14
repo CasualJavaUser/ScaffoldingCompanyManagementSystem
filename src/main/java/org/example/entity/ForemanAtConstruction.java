@@ -41,6 +41,10 @@ public class ForemanAtConstruction {
         this.date = date;
     }
 
+    public static boolean assign(Labourer labourer, ConstructionSite constructionSite, float hoursWorked) {
+        return assign(labourer, constructionSite, LocalDate.now(), hoursWorked);
+    }
+
     public static boolean assign(Labourer foreman, ConstructionSite constructionSite, LocalDate date, float hoursWorked) {
         if (!foreman.isForeman()) {
             System.err.println("labourer " + foreman.getFullName() + " is not a foreman");

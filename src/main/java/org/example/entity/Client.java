@@ -33,4 +33,28 @@ public class Client {
         this.phone = phone;
         this.email = email;
     }
+
+    public void addOffer(Offer offer) {
+        offers.add(offer);
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public int getOfferCount() {
+        return offers.size();
+    }
+
+    public List<Offer> getOffersCopy() {
+        return new ArrayList<>(offers);
+    }
 }

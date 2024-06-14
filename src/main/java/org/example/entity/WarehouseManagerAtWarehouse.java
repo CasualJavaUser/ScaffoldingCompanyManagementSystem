@@ -38,6 +38,10 @@ public class WarehouseManagerAtWarehouse {
         this.date = date;
     }
 
+    public static boolean assign(Labourer warehouseManager, Warehouse warehouse, float hoursWorked) {
+        return assign(warehouseManager, warehouse, LocalDate.now(), hoursWorked);
+    }
+
     public static boolean assign(Labourer warehouseManager, Warehouse warehouse, LocalDate date, float hoursWorked) {
         if (!warehouseManager.isWarehouseManager()) {
             System.err.println("labourer " + warehouseManager.getFullName() + " is not a warehouse manager");
