@@ -31,13 +31,12 @@ public abstract class Worksite {
         return address;
     }
 
-    @Override
-    public String toString() {
-        return "Worksite (address: " + address + ")";
-    }
-
     public boolean isActive() {
         return isActive;
+    }
+
+    public void setInactive() {
+        isActive = false;
     }
 
     public Integer getId() {

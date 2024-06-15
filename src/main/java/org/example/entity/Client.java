@@ -1,6 +1,7 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
+import org.example.Database;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,5 +57,16 @@ public class Client {
 
     public List<Offer> getOffersCopy() {
         return new ArrayList<>(offers);
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + id +
+                ", companyName='" + companyName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", offerCount='" + offers.size() + '\'' +
+                '}';
     }
 }

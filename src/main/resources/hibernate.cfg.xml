@@ -10,7 +10,7 @@
         <property name="show_sql">false</property>
         <property name="current_session_context_class">thread</property>
         <property name="hibernate.default_schema">DB_SCAFFOLDING</property>
-        <property name="hbm2ddl.auto">create</property>
+        <property name="hbm2ddl.auto">update</property>
         <mapping class="org.example.entity.Client" />
         <mapping class="org.example.entity.ConstructionSite" />
         <mapping class="org.example.entity.Employee" />

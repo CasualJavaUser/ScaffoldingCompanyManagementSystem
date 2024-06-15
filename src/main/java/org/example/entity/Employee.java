@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.example.Database;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,8 +39,7 @@ public abstract class Employee {
     }
 
     public void fire() {
-        //TODO fire
-        Database.remove(this);
+        isCurrentlyEmployed = false;
     }
 
     public String getFullName() {
@@ -48,7 +48,7 @@ public abstract class Employee {
 
     @Override
     public String toString() {
-        return "Employee (id: " + id + " full name: " + getFullName() + ")";
+        return getClass().getSimpleName() + " (id: " + id + " full name: " + getFullName() + ")";
     }
 
     public static File getMonthlySummary(int year, int month) {

@@ -1,6 +1,7 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
+import org.example.Database;
 
 import java.util.Comparator;
 import java.util.SortedSet;
@@ -48,5 +49,18 @@ public class Manager extends Employee {
 
     public void setPreviousExperience(String previousExperience) {
         this.previousExperience = previousExperience;
+    }
+
+    public void assignToConstructionSite(ConstructionSite constructionSite) {
+        constructionSites.add(constructionSite);
+        Database.merge(this, constructionSite);
+    }
+
+    @Override
+    public void fire() {
+        if (constructionSites.stream().anyMatch(Worksite::isActive))
+            System.err.println("manager is assigned to an active construction site and cannot be fired");
+        else
+            super.fire();
     }
 }

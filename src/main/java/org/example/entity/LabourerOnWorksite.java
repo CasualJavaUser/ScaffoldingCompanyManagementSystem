@@ -68,6 +68,28 @@ public class LabourerOnWorksite {
         return true;
     }
 
+    public static boolean dissociate(Labourer labourer, LocalDate date) {
+        Optional<LabourerOnWorksite> low = Database.selectFrom(LabourerOnWorksite.class).stream()
+                .filter(l -> l.labourer.getId().equals(labourer.getId()))
+                .filter(l -> l.date.equals(date))
+                .findFirst();
+
+        if (low.isEmpty()) {
+            System.out.println("labourer is not assigned to any worksite");
+            return false;
+        }
+        if (labourer.isForeman() && ForemanAtConstruction.isForemanAssigned(labourer, date)) {
+            System.err.println("labourer is assigned as a foreman at a construction site");
+            return false;
+        }
+        if (labourer.isWarehouseManager() && WarehouseManagerAtWarehouse.isWarehouseManagerAssigned(labourer, date)) {
+            System.err.println("labourer is assigned as a warehouse manager at a warehouse");
+            return false;
+        }
+        Database.remove(low.get());
+        return true;
+    }
+
     public static boolean canLabourerBeAssigned(Labourer labourer, Worksite worksite, LocalDate date, boolean checkForSupervisor) {
         //OHS training
         if (!labourer.hasValidQualification(Qualification.Type.OHS_TRAINING)) {
@@ -80,7 +102,7 @@ public class LabourerOnWorksite {
             return false;
         }
         //is assigned to a different worksite
-        if (getAssignedWorksiteId(labourer, date) != null) {
+        if (isAssigned(labourer, date)) {
             System.err.println("labourer is already assigned to a worksite.");
             return false;
         }
@@ -105,6 +127,25 @@ public class LabourerOnWorksite {
                 .findFirst()
                 .map(low -> low.worksite.getId())
                 .orElse(null);
+    }
+
+    public static boolean isAssigned(Labourer labourer, LocalDate date) {
+        return Database.selectFrom(LabourerOnWorksite.class).stream()
+                .filter(low -> low.labourer.getId().equals(labourer.getId()))
+                .anyMatch(low -> low.date.equals(date));
+    }
+
+    public static boolean isAnyAssigned(Worksite worksite, LocalDate date) {
+        return Database.selectFrom(LabourerOnWorksite.class).stream()
+                .filter(low -> low.worksite.getId().equals(worksite.getId()))
+                .anyMatch(low -> low.date.equals(date));
+    }
+
+    public static long getAssignedCount(Worksite worksite, LocalDate date) {
+        return Database.selectFrom(LabourerOnWorksite.class).stream()
+                .filter(low -> low.worksite.getId().equals(worksite.getId()))
+                .filter(low -> low.date.equals(date))
+                .count();
     }
 
     /**

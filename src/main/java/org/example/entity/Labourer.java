@@ -62,7 +62,16 @@ public class Labourer extends Employee {
     }
 
     @Override
+    public void fire() {
+        if (LabourerOnWorksite.isAssigned(this, LocalDate.now()))
+            System.err.println("labourer is assigned to a worksite and cannot be fired");
+        else
+            super.fire();
+    }
+
+    @Override
     public String toString() {
-        return super.toString() + "\nqualifications: " + qualifications.values().stream().map(Qualification::toString).collect(Collectors.joining("\n - "));
+        return "\nLabourer (id: " + getId() + " full name: " + getFullName() + " is foreman: " + isForeman + " is warehouse manager: " + isWarehouseManager + ")"
+                + "\nqualifications: " + qualifications.values().stream().map(Qualification::toString).collect(Collectors.joining("\n - "));
     }
 }

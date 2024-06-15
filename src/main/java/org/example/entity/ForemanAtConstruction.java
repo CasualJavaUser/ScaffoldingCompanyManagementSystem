@@ -79,6 +79,28 @@ public class ForemanAtConstruction {
         }
     }
 
+    public static boolean dissociate(Labourer foreman, LocalDate date) {
+        if (!foreman.isForeman()) {
+            System.err.println("labourer is not a foreman");
+            return false;
+        }
+        Optional<ForemanAtConstruction> optionalFAC = Database.selectFrom(ForemanAtConstruction.class).stream()
+                .filter(fac -> fac.foreman.getId().equals(foreman.getId()))
+                .filter(fac -> fac.date.equals(date))
+                .findFirst();
+        if (optionalFAC.isEmpty()) {
+            System.out.println("foreman is not assigned to any construction site");
+            return false;
+        }
+        if (LabourerOnWorksite.getAssignedCount(optionalFAC.get().constructionSite, date) > 1) {
+            System.err.println("dissociate the rest of labourer before dissociating the foreman");
+            return false;
+        }
+        Database.remove(optionalFAC.get());
+        LabourerOnWorksite.dissociate(foreman, date);
+        return true;
+    }
+
     public static Integer getOverseenConstructionId(Labourer foreman, LocalDate date) {
         return Database.selectFrom(ForemanAtConstruction.class).stream()
                 .filter(fac -> fac.foreman.getId().equals(foreman.getId()))
@@ -100,6 +122,12 @@ public class ForemanAtConstruction {
 
     public Integer getConstructionSiteId() {
         return constructionSite.getId();
+    }
+
+    public static boolean isForemanAssigned(Labourer foreman, LocalDate date) {
+        return Database.selectFrom(ForemanAtConstruction.class).stream()
+                .filter(fac -> fac.foreman.getId().equals(foreman.getId()))
+                .anyMatch(fac -> fac.date.equals(date));
     }
 
     @Override

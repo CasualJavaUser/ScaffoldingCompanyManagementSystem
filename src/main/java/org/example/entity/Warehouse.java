@@ -51,4 +51,21 @@ public class Warehouse extends Worksite {
                 .filter(Worksite::isActive)
                 .collect(Collectors.toSet());
     }
+
+    @Override
+    public void setInactive() {
+        if (LabourerOnWorksite.isAnyAssigned(this, LocalDate.now()))
+            System.err.println("Dissociate all labourers before making warehouse inactive");
+        else
+            super.setInactive();
+    }
+
+    @Override
+    public String toString() {
+        return "Warehouse{" +
+                "address=" + getAddress() +
+                ", openingTime=" + openingTime +
+                ", closingTime=" + closingTime +
+                '}';
+    }
 }

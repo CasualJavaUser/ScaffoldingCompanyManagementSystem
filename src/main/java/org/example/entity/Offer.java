@@ -246,4 +246,18 @@ public class Offer {
     public String getComment() {
         return comment;
     }
+
+    @Override
+    public String toString() {
+        return "Offer{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", assemblyStartDate=" + assemblyStartDate +
+                ", disassemblyStartDate=" + disassemblyStartDate +
+                ", assemblyCost=" + assemblyCost +
+                ", disassemblyCost=" + disassemblyCost +
+                ", rentalCost=" + rentalCost +
+                ", status=" + status +
+                '}';
+    }
 }

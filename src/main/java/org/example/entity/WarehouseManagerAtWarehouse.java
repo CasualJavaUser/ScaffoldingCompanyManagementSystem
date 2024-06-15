@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.example.Database;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Entity
 @Table(
@@ -89,6 +90,34 @@ public class WarehouseManagerAtWarehouse {
         return Database.selectFrom(WarehouseManagerAtWarehouse.class).stream()
                 .filter(wmaw -> wmaw.getWarehouseId().equals(warehouse.getId()))
                 .anyMatch(wmaw -> wmaw.getDate().equals(date));
+    }
+
+    public static boolean isWarehouseManagerAssigned(Labourer warehouseManager, LocalDate date) {
+        return Database.selectFrom(WarehouseManagerAtWarehouse.class).stream()
+                .filter(wmaw -> wmaw.warehouseManager.getId().equals(warehouseManager.getId()))
+                .anyMatch(wmaw -> wmaw.date.equals(date));
+    }
+
+    public static boolean dissociate(Labourer warehouseManager, LocalDate date) {
+        if (!warehouseManager.isWarehouseManager()) {
+            System.err.println("labourer is not a warehouse manager");
+            return false;
+        }
+        Optional<WarehouseManagerAtWarehouse> optionalMWAW = Database.selectFrom(WarehouseManagerAtWarehouse.class).stream()
+                .filter(mwaw -> mwaw.warehouse.getId().equals(warehouseManager.getId()))
+                .filter(mwaw -> mwaw.date.equals(date))
+                .findFirst();
+        if (optionalMWAW.isEmpty()) {
+            System.out.println("warehouse manager is not assigned to any construction site");
+            return false;
+        }
+        if (LabourerOnWorksite.getAssignedCount(optionalMWAW.get().warehouse, date) > 1) {
+            System.err.println("dissociate the rest of labourer before dissociating the warehouse manager");
+            return false;
+        }
+        Database.remove(optionalMWAW.get());
+        LabourerOnWorksite.dissociate(warehouseManager, date);
+        return true;
     }
 
     public Integer getWarehouseManagerId() {

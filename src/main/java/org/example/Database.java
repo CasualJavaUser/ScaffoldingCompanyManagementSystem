@@ -27,15 +27,6 @@ public class Database {
         return currentSession.createQuery("from " + c.getSimpleName(), c);
     }
 
-    public static void remove(Object object) {
-        if (object == null)
-            return;
-
-        Transaction transaction = currentSession.beginTransaction();
-        currentSession.remove(object);
-        transaction.commit();
-    }
-
     public static void persist(Object object) {
         if (object == null)
             return;
@@ -66,6 +57,18 @@ public class Database {
         transaction.commit();
     }
 
+    public static void merge(Object... objects) {
+        if (objects == null)
+            return;
+
+        Transaction transaction = currentSession.beginTransaction();
+        for (Object object : objects) {
+            if (object != null)
+                currentSession.merge(object);
+        }
+        transaction.commit();
+    }
+
     public static void mergeAndPersist(Object toMerge, Object... toPersist) {
         if (toPersist == null || toMerge == null)
             return;
@@ -75,6 +78,15 @@ public class Database {
             currentSession.persist(o);
         }
         currentSession.merge(toMerge);
+        transaction.commit();
+    }
+
+    public static void remove(Object object) {
+        if (object == null)
+            return;
+
+        Transaction transaction = currentSession.beginTransaction();
+        currentSession.remove(object);
         transaction.commit();
     }
 }
